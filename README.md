@@ -1,3 +1,3 @@
 # ComArch_assembly
 
-# write in c language
+# write in Java language
