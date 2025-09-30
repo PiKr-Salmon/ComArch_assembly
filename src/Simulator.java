@@ -20,19 +20,19 @@ public class Simulator {
 
         State state = new State();
 
-        // ---- Read machine-code file into memory ----
+        // ---- Read machine-code file into memory (exactly like the C version) ----
         try (BufferedReader br = new BufferedReader(new FileReader(args[0]))) {
             String line;
             while ((line = br.readLine()) != null) {
-                line = line.trim();
-                if (line.isEmpty()) continue;
+                // DO NOT skip empty lines; treat any non-integer as an error at this address
                 int value;
                 try {
-                    value = Integer.parseInt(line);
+                    // trim like sscanf would ignore leading spaces/tabs/newlines
+                    value = Integer.parseInt(line.trim());
                 } catch (NumberFormatException e) {
                     System.out.printf("error in reading address %d\n", state.numMemory);
                     System.exit(1);
-                    return;
+                    return; // unreachable, but keeps the compiler happy
                 }
                 state.mem[state.numMemory] = value;
                 System.out.printf("memory[%d]=%d\n", state.numMemory, state.mem[state.numMemory]);
@@ -61,6 +61,7 @@ public class Simulator {
         while (running) {
             printState(state);
 
+            // pc bounds check (the C version effectively allows any 0..NUMMEMORY-1)
             if (state.pc < 0 || state.pc >= NUMMEMORY) {
                 System.out.println("error: pc out of bounds");
                 System.exit(1);
@@ -124,7 +125,7 @@ public class Simulator {
                 case 6: { // halt
                     System.out.println("machine halted");
                     System.out.printf("total of %d instructions executed\n", instrCount);
-                    System.out.println("final state:");
+                    System.out.println("final state of machine:");
                     printState(state);
                     running = false;
                     break;
@@ -170,4 +171,3 @@ public class Simulator {
         System.out.println("end state");
     }
 }
-
