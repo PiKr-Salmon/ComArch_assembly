@@ -4,7 +4,7 @@ import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
-        String filePath = "D:\\งานหรรษา\\testcase.txt";
+        String filePath = "src\\assembly.txt";
         List<String> lines = new ArrayList<>();
 
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
@@ -34,7 +34,7 @@ public class Main {
             System.out.println("Error detected! (Assembler)");
             System.exit(1); //exit(1)
         } else {
-            String outFilePath = "D:\\งานหรรษา\\machinecode.txt";
+            String outFilePath = "src\\machinecode.txt";
             try (BufferedWriter writer = new BufferedWriter(new FileWriter(outFilePath))) {
                 for (int code : result.machineCode) {
                     writer.write(String.valueOf(code));
@@ -45,6 +45,11 @@ public class Main {
                 System.out.println("Error writing file!");
                 System.exit(1); //exit(1)
             }
+
+            //simulator
+            System.out.println("---------------------------");
+            System.out.println("Simulator:");
+            Simulator.main(new String[]{outFilePath});
 
             System.exit(0); //exit(0)
         }
