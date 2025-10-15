@@ -437,8 +437,8 @@ public class AssemblerParser {
 }
  */
 
-//AssemblerParser v4, can stop the entire process when error is occurred, can handle with whitespace in text file,
-//$0 can't be changed, and R-Type instruction can't use symbolic label in fields
+//AssemblerParser v4, can stop the next process when error is occurred, can handle with whitespace in text file,
+//$0 can't be changed, register 0-7 only, and R-Type instruction can't use symbolic label in fields
 public class AssemblerParser {
     private static final List<String> INSTRUCTION = Arrays.asList("add", "nand", "lw", "sw", "beq", "jalr", "halt", "noop", ".fill");
     private static final Set<String> definedLabel = new HashSet<>();
@@ -583,8 +583,33 @@ public class AssemblerParser {
                 System.out.println("add/nand instruction fields must be register numbers, not symbolic labels");
                 return false;
             }
-            if("0".equals(field2)) { //check if field2 is not zero
+
+            //register number check
+            int r0 = Integer.parseInt(field0);
+            int r1 = Integer.parseInt(field1);
+            int r2 = Integer.parseInt(field2);
+
+            if (r0 < 0 || r0 > 7 || r1 < 0 || r1 > 7 || r2 < 0 || r2 > 7) {
+                System.out.println("Register number out of range (must be 0-7)");
+                return false;
+            }
+
+            if (r2 == 0) { //destination cannot be reg0
                 System.out.println("Destination register can't be $0 with instruction '" + instruction + "'");
+                return false;
+            }
+        }
+
+        if (instruction.equals("lw") || instruction.equals("sw") || instruction.equals("beq")) {
+            if (!isNumber(field0) || !isNumber(field1)) {
+                System.out.println(instruction + " instruction register fields must be numbers (0-7)");
+                return false;
+            }
+
+            int r0 = Integer.parseInt(field0);
+            int r1 = Integer.parseInt(field1);
+            if (r0 < 0 || r0 > 7 || r1 < 0 || r1 > 7) {
+                System.out.println("Register number out of range (must be 0-7)");
                 return false;
             }
         }
